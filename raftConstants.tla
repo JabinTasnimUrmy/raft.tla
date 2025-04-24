@@ -5,6 +5,9 @@ EXTENDS Naturals, FiniteSets, Sequences, TLC
 \* The set of server IDs
 CONSTANTS Server
 
+\* The Switch entity
+CONSTANTS Switch
+
 \* The set of client requests that can go into the log
 CONSTANTS Value
 
@@ -16,7 +19,7 @@ CONSTANTS Nil
 
 \* Message types:
 CONSTANTS RequestVoteRequest, RequestVoteResponse,
-          AppendEntriesRequest, AppendEntriesResponse
+          AppendEntriesRequest, AppendEntriesResponse, AppendSwitchEntriesRequest
 
 \* for instrumentation to limit model state space
 CONSTANTS MaxClientRequests

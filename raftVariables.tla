@@ -1,5 +1,4 @@
 --------------------------- MODULE raftVariables ---------------------------
-
 EXTENDS raftConstants
 
 \* Global variables
@@ -12,7 +11,7 @@ VARIABLE messages
 VARIABLE leaderCount
 
 \* maximum client requests so far
-VARIABLE maxc
+VARIABLE maxc 
 
 \* variable for tracking entry commit message counts
 \* Maps <<logIndex, logTerm>> to a record tracking message counts.
@@ -21,7 +20,11 @@ VARIABLE maxc
 \*   committed |-> Bool ] \* Flag indicating if the entry is committed
 VARIABLE entryCommitStats
 
-instrumentationVars == <<leaderCount, maxc, entryCommitStats>>
+VARIABLE serverCache 
+
+
+
+instrumentationVars == <<leaderCount, maxc, entryCommitStats, serverCache>>
 
 \* The following variables are all per server (functions with domain Server).
 
@@ -41,6 +44,7 @@ VARIABLE log
 \* The index of the latest entry in the log the state machine may apply.
 VARIABLE commitIndex
 logVars == <<log, commitIndex>>
+
 
 \* The following variables are used only on candidates:
 \* The set of servers from which the candidate has received a RequestVote
@@ -69,3 +73,6 @@ vars == <<messages, serverVars, candidateVars, leaderVars, logVars, instrumentat
 
 =============================================================================
 \* Created by Ovidiu-Cristian Marcu
+
+
+
