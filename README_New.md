@@ -18,7 +18,7 @@ Modules Description
 - raftInit.tla: Initial state predicates (Init, MyInit).
 - raftActionsSolution.tla: (Main Logic) State transition actions (Hovercraft-specific and standard Raft, with corrected UNCHANGED clauses).
 - raftModelPerf.tla: Performance/instrumentation invariants (e.g., MaxCInv, EntryCommitAckQuorumInv). EntryCommitMessageCountInv is commented out.
-- raftSpec.tla: (Top-Level) Integrates modules, defines Spec/MySpec, core safety invariants (TypeOK, LogInv, etc.), combines invariants for checking.
+- raftSpec.tla: (Top-Level) Integrates modules, defines Spec/MyNetAggSpec, core safety invariants (TypeOK, LogInv, etc.), combines invariants for checking.
 
 A screenshot of the model overview has already been provided.
 

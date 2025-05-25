@@ -1,4 +1,5 @@
 --------------------------- MODULE raftVariables ---------------------------
+
 EXTENDS raftConstants
 
 \* Global variables
@@ -11,7 +12,7 @@ VARIABLE messages
 VARIABLE leaderCount
 
 \* maximum client requests so far
-VARIABLE maxc 
+VARIABLE maxc
 
 \* variable for tracking entry commit message counts
 \* Maps <<logIndex, logTerm>> to a record tracking message counts.
@@ -20,11 +21,37 @@ VARIABLE maxc
 \*   committed |-> Bool ] \* Flag indicating if the entry is committed
 VARIABLE entryCommitStats
 
-VARIABLE serverCache 
+VARIABLE Servers
+
+\* index into Server
+VARIABLE switchIndex
+
+\* Temporary storage for requests received by the switch before they're ordered
+\* Maps request value to the full payload entry
+VARIABLE switchBuffer
+
+\* Each server's buffer of unordered requests received from the switch
+\* Maps from Server to a set of request values pending ordering
+VARIABLE unorderedClientRequests
+
+\* Records which <<value, term>> pairs the current switch has sent to each server.
+\* Maps Server ID -> Set of <<Value, Term>> pairs.
+VARIABLE switchToServerSentRecord
+
+\* Caches recently sent <<value, term>> entries by NetAgg to avoid redundant transmissions.
+\* Maps Server ID -> Set of recently sent <<Value, Term>> pairs.
+
+VARIABLES netAggRecentSentEntries
+
+\* Tracks the next log entry index that NetAgg will attempt to send to each server.
+\* Maps Server ID -> Log Index (integer).
+VARIABLES netAggPerServerSendIndex
+
+NetAgghovercraftVars == <<switchBuffer, switchIndex, switchToServerSentRecord, unorderedClientRequests, netAggRecentSentEntries, netAggPerServerSendIndex>>
+
+instrumentationVars == <<leaderCount, maxc, entryCommitStats>>
 
 
-
-instrumentationVars == <<leaderCount, maxc, entryCommitStats, serverCache>>
 
 \* The following variables are all per server (functions with domain Server).
 
@@ -44,7 +71,6 @@ VARIABLE log
 \* The index of the latest entry in the log the state machine may apply.
 VARIABLE commitIndex
 logVars == <<log, commitIndex>>
-
 
 \* The following variables are used only on candidates:
 \* The set of servers from which the candidate has received a RequestVote
@@ -68,11 +94,11 @@ VARIABLE nextIndex
 VARIABLE matchIndex
 leaderVars == <<nextIndex, matchIndex>>
 
+
+
+
 \* All variables; used for stuttering (asserting state hasn't changed).
-vars == <<messages, serverVars, candidateVars, leaderVars, logVars, instrumentationVars>>
+vars == <<messages, serverVars, candidateVars, leaderVars, logVars, instrumentationVars, NetAgghovercraftVars, Servers>>
 
 =============================================================================
 \* Created by Ovidiu-Cristian Marcu
-
-
-

@@ -20,7 +20,7 @@ You can run one configuration see raft.cfg with: ./tlc.py --coverage 1 mc raftMo
 
 This state from a 14 steps invalidates LeaderCommited fake invariant with entryCommitStats updated.
 
-State 14: <MyNext line 54, col 15 to line 55, col 93 of module raftSpec>
+State 14: <MyNetAggNext line 54, col 15 to line 55, col 93 of module raftSpec>
 /\ messages = ([mdest |-> r1, msource |-> r2, mtype |-> M_AppendEntriesResponse, mterm |-> 2, msuccess |-> TRUE, mmatchIndex |-> 1] :> 0 @@ [mdest |-> r1, msource |-> r2, mtype |-> M_AppendEntriesResponse, mterm |-> 2, msuccess |-> TRUE, mmatchIndex |-> 2] :> 1 @@ [mdest |-> r1, msource |-> r3, mtype |-> M_AppendEntriesResponse, mterm |-> 2, msuccess |-> TRUE, mmatchIndex |-> 1] :> 1 @@ [mdest |-> r2, msource |-> r1, mtype |-> M_AppendEntriesRequest, mterm |-> 2, mlog |-> <<[term |-> 2, value |-> v2]>>, mprevLogIndex |-> 0, mprevLogTerm |-> 0, mentries |-> <<[term |-> 2, value |-> v2]>>, mcommitIndex |-> 0] :> 0 @@ [mdest |-> r2, msource |-> r1, mtype |-> M_AppendEntriesRequest, mterm |-> 2, mlog |-> <<[term |-> 2, value |-> v2], [term |-> 2, value |-> v1]>>, mprevLogIndex |-> 1, mprevLogTerm |-> 2, mentries |-> <<[term |-> 2, value |-> v1]>>, mcommitIndex |-> 1] :> 0 @@ [mdest |-> r3, msource |-> r1, mtype |-> M_AppendEntriesRequest, mterm |-> 2, mlog |-> <<[term |-> 2, value |-> v2], [term |-> 2, value |-> v1]>>, mprevLogIndex |-> 0, mprevLogTerm |-> 0, mentries |-> <<[term |-> 2, value |-> v2]>>, mcommitIndex |-> 1] :> 0)
 /\ matchIndex = ( r1 :> (r1 :> 0 @@ r2 :> 1 @@ r3 :> 0) @@
   r2 :> (r1 :> 0 @@ r2 :> 0 @@ r3 :> 0) @@
@@ -62,7 +62,7 @@ Disable Profiling in TLC Options. See screenshots, raftModelPerf.cfg for initial
 
 TLC command line parameters: -coverage 1
 
-For MySpec we obtain this trace that invalidates LeaderCommitted fake invariant.
+For MyNetAggSpec we obtain this trace that invalidates LeaderCommitted fake invariant.
 
 With this Init
 /\  commitIndex = [r1 |-> 1, r2 |-> 1, r3 |-> 1]
@@ -137,7 +137,7 @@ With this Init
 /\  votesGranted = [r1 |-> {"r1"}, r2 |-> {}, r3 |-> {}]
 /\  votesResponded = [r1 |-> {"r1"}, r2 |-> {}, r3 |-> {}]
 
-and MyNext
+and MyNetAggNext
 
 and
 
@@ -228,7 +228,7 @@ LeaderCommitted ==
 [
  _TEAction |-> [
    position |-> 2,
-   name |-> "MyNext",
+   name |-> "MyNetAggNext",
    location |-> "line 51, col 46 to line 51, col 85 of module raftSpec"
  ],
  commitIndex |-> [r1 |-> 1, r2 |-> 1, r3 |-> 1],
@@ -310,7 +310,7 @@ LeaderCommitted ==
 [
  _TEAction |-> [
    position |-> 3,
-   name |-> "MyNext",
+   name |-> "MyNetAggNext",
    location |-> "line 54, col 15 to line 55, col 93 of module raftSpec"
  ],
  commitIndex |-> [r1 |-> 1, r2 |-> 1, r3 |-> 1],
@@ -474,7 +474,7 @@ LeaderCommitted ==
 [
  _TEAction |-> [
    position |-> 5,
-   name |-> "MyNext",
+   name |-> "MyNetAggNext",
    location |-> "line 53, col 35 to line 53, col 63 of module raftSpec"
  ],
  commitIndex |-> [r1 |-> 2, r2 |-> 1, r3 |-> 1],
@@ -569,7 +569,7 @@ LeaderCommitted ==
 [
  _TEAction |-> [
    position |-> 6,
-   name |-> "MyNext",
+   name |-> "MyNetAggNext",
    location |-> "line 54, col 15 to line 55, col 93 of module raftSpec"
  ],
  commitIndex |-> [r1 |-> 2, r2 |-> 1, r3 |-> 1],
@@ -664,7 +664,7 @@ LeaderCommitted ==
 [
  _TEAction |-> [
    position |-> 7,
-   name |-> "MyNext",
+   name |-> "MyNetAggNext",
    location |-> "line 53, col 35 to line 53, col 63 of module raftSpec"
  ],
  commitIndex |-> [r1 |-> 2, r2 |-> 1, r3 |-> 1],
@@ -772,7 +772,7 @@ LeaderCommitted ==
 [
  _TEAction |-> [
    position |-> 8,
-   name |-> "MyNext",
+   name |-> "MyNetAggNext",
    location |-> "line 54, col 15 to line 55, col 93 of module raftSpec"
  ],
  commitIndex |-> [r1 |-> 2, r2 |-> 1, r3 |-> 1],
@@ -883,7 +883,7 @@ LeaderCommitted ==
 [
  _TEAction |-> [
    position |-> 9,
-   name |-> "MyNext",
+   name |-> "MyNetAggNext",
    location |-> "line 54, col 15 to line 55, col 93 of module raftSpec"
  ],
  commitIndex |-> [r1 |-> 2, r2 |-> 1, r3 |-> 1],
@@ -994,7 +994,7 @@ LeaderCommitted ==
 [
  _TEAction |-> [
    position |-> 10,
-   name |-> "MyNext",
+   name |-> "MyNetAggNext",
    location |-> "line 54, col 15 to line 55, col 93 of module raftSpec"
  ],
  commitIndex |-> [r1 |-> 2, r2 |-> 2, r3 |-> 1],
@@ -1112,7 +1112,7 @@ LeaderCommitted ==
 [
  _TEAction |-> [
    position |-> 11,
-   name |-> "MyNext",
+   name |-> "MyNetAggNext",
    location |-> "line 54, col 15 to line 55, col 93 of module raftSpec"
  ],
  commitIndex |-> [r1 |-> 2, r2 |-> 2, r3 |-> 2],

@@ -40,7 +40,7 @@ My initial goal is to begin integrating Hovercraft ideas into the Raft TLA+ mode
 
 Actions:
 - Introduced serverCache, switchLog, switchNextIndex variables.
-- Created initial actions: SwitchAcceptAndLogRequest (Switch receives client request), SwitchAppendEntries (Switch sends full entry to servers one by one), HandleAppendSwitchEntryRequest (Server receives entry from Switch and caches it), LeaderProposeFromCache (Leader takes from its cache, logs full entry), AppendMetaDataEntries (Leader sends metadata only based on its log), - - NewHandleAppendEntriesRequest (Follower handles metadata using its cache).
+- Created initial actions: SwitchAcceptAndLogRequest (Switch receives client request), SwitchAppendEntries (Switch sends full entry to servers one by one), HandleAppendSwitchEntryRequest (Server receives entry from Switch and caches it), LeaderProposeFromCache (Leader takes from its cache, logs full entry), AppendMetaDataEntries (Leader sends metadata only based on its log), - - NewNetAggHandleAppendEntriesRequests (Follower handles metadata using its cache).
 - Modified ClientRequest to interact with the Switch instead of the Leader directly.
 - Initial Thought Process: My initial understanding focused heavily on the AppendEntries optimization (sending only metadata). I modelled the Switch as an intermediary that received client requests, logged them, and then pushed the full entries out to servers for caching before the leader started the metadata-based ordering process.
 
@@ -51,7 +51,7 @@ The model couldn't be parsed. More importantly, a conceptual review against the 
 Date: 17/04/2025
 
 ------------------------------------------------------------------------------------------------------------
-Debugging: Realized the issue could be stale parsing, incorrect model configuration (using Init instead of MyInit),  an incomplete Init definition that didn't account for the new variables. Confirmed model settings targeted MyInit. Focused on ensuring the default Init predicate correctly initialized all variables, including the newly added serverCache, switchLog, etc. Corrected type errors in the MyInit definition (e.g., voterLog structure).
+Debugging: Realized the issue could be stale parsing, incorrect model configuration (using Init instead of MyInit),  an incomplete Init definition that didn't account for the new variables. Confirmed model settings targeted MyInit. Focused on ensuring the default Init predicate correctly initialized all variables, including the newly added serverCache, switchLog, etc. Corrected type errors in the MyNetAggInit definition (e.g., voterLog structure).
 Outcome: Successfully resolved the initial state error by fixing Init and ensuring correct parsing. The model can now start.
 
 -----------------------------------------------------------------------------------------------------------------------
@@ -85,7 +85,7 @@ Date:20/04/2025
 - Removed: The incorrect Switch actions (SwitchAcceptAndLogRequest, SwitchAppendEntries, HandleAppendSwitchEntryRequest) and the modified ClientRequest.
 - Created ClientRequestViaSwitch: Designed this new action to directly model the effect of the multicast. It takes a client value v, generates a unique reqId, and immediately adds the full cache entry (value, payload, reqId) to the serverCache of all servers in a single atomic step. This simulates the payload arriving everywhere concurrently.
 - Created LeaderLogMetadata: Implemented the action where the leader non-deterministically selects an entry from its cache (which was populated by ClientRequestViaSwitch) that hasn't been logged yet, creates a metadata-only record (term, value, reqId), and appends that to its log. Included logic to remove the entry from the leader's cache upon logging.
-- Renamed/Refined: Renamed AppendMetaDataEntries to AppendMetadata and NewHandleAppendEntriesRequest to HandleMetadataRequest for clarity. Ensured AppendMetadata sent only the metadata from the leader's log. Ensured HandleMetadataRequest used the incoming metadata reqId to look up the payload in the follower's cache (populated by ClientRequestViaSwitch) to reconstruct and log the full entry locally.
+- Renamed/Refined: Renamed AppendMetaDataEntries to AppendMetadata and NewNetAggHandleAppendEntriesRequests to HandleMetadataRequest for clarity. Ensured AppendMetadata sent only the metadata from the leader's log. Ensured HandleMetadataRequest used the incoming metadata reqId to look up the payload in the follower's cache (populated by ClientRequestViaSwitch) to reconstruct and log the full entry locally.
 
 A new set of actions representing the core Hovercraft data flow: simultaneous payload caching via ClientRequestViaSwitch, leader metadata logging via LeaderLogMetadata, metadata propagation via AppendMetadata, and follower log reconstruction via HandleMetadataRequest.
 
@@ -101,7 +101,7 @@ Today my goal is get the re-implemented model to run and pass basic checks in TL
 
 - Debugging: This required the most painstaking effort. The process involved:
    - For each "not specified" error, identifying the action and variable, analyzing if the action should change it, and adding it either to an assignment (var' = ...) or the UNCHANGED list.
-   - For each "UNCHANGED conflict", identifying the action and variable, finding where the variable was being changed (e.g., messages by Send/Reply/Discard), and meticulously correcting the UNCHANGED clause to exclude that variable. This often required adding explicit UNCHANGED lists to internal branches of complex actions like HandleMetadataRequest and HandleAppendEntriesResponse, rather than relying on a single final UNCHANGED clause. Made heavy use of variable groupings (serverVars, logVars, etc.) but had to be careful they didn't incorrectly include a variable changed in a specific branch. Repeatedly iterated through fixing one error, re-running, and addressing the next.
+   - For each "UNCHANGED conflict", identifying the action and variable, finding where the variable was being changed (e.g., messages by Send/Reply/Discard), and meticulously correcting the UNCHANGED clause to exclude that variable. This often required adding explicit UNCHANGED lists to internal branches of complex actions like HandleMetadataRequest and NetAggHandleAppendEntriesResponses, rather than relying on a single final UNCHANGED clause. Made heavy use of variable groupings (serverVars, logVars, etc.) but had to be careful they didn't incorrectly include a variable changed in a specific branch. Repeatedly iterated through fixing one error, re-running, and addressing the next.
 
 Outcome: After numerous iterations and careful checking of almost every action's variable assignments and UNCHANGED clauses, successfully resolved all specification completeness and UNCHANGED conflict errors. It requires significant perseverance in detailed TLA+ debugging.
 
@@ -113,18 +113,18 @@ Date: 23/04/2025
 - Attempted to run the model after fixing runtime logic errors.
 Issues: 
  - Encountered several parser errors:
-       - "Unknown operator HandleAppendEntriesResponse" (when trying to use the corrected action).
+       - "Unknown operator NetAggHandleAppendEntriesResponses" (when trying to use the corrected action).
        - Multiple "Operator X already defined or declared" errors (e.g., for Committed, MaxCInv).
        - "Unknown operator Int".
        - "Circular dependency..." (raftModelPerf <-> raftSpec).
-       - Toolbox Error: "Unknown operator MySpec".
+       - Toolbox Error: "Unknown operator MyNetAggSpec".
 
 Debugging:
 - Realized the first error was due to saving/parsing issues after replacing code. Emphasized the importance of saving files and re-parsing the project.
 - Understood the "already defined" errors were caused by copying definitions into raftSpec instead of solely relying on EXTENDS raftHelpers and EXTENDS raftModelPerf. Consolidated definitions, removing duplicates from raftSpec.
 - Corrected Int to Nat in TypeOK.
 - Broke the circular dependency by changing raftModelPerf to extend raftVariables instead of raftSpec.
-- Fixed the Toolbox configuration error by using the Init / Next fields instead of typing MySpec directly into the "Temporal formula" box.
+- Fixed the Toolbox configuration error by using the Init / Next fields instead of typing MyNetAggSpec directly into the "Temporal formula" box.
 
 Successfully resolved all parser and configuration errors by correcting module dependencies (EXTENDS), removing duplicate definitions, fixing typos (Int), and using the Toolbox correctly.
 

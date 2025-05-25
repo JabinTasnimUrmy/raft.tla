@@ -413,7 +413,7 @@ HandleRequestVoteResponse(i, j, m) ==
 \* m.mterm <= currentTerm[i]. This just handles m.entries of length 0 or 1, but
 \* implementations could safely accept more by treating them the same as
 \* multiple independent requests of 1 entry.
-HandleAppendEntriesRequest(i, j, m) ==
+NetAggHandleAppendEntriesRequests(i, j, m) ==
     LET logOk == \/ m.mprevLogIndex = 0
                  \/ /\ m.mprevLogIndex > 0
                     /\ m.mprevLogIndex <= Len(log[i])
@@ -484,7 +484,7 @@ HandleAppendEntriesRequest(i, j, m) ==
 
 \* Server i receives an AppendEntries response from server j with
 \* m.mterm = currentTerm[i].
-HandleAppendEntriesResponse(i, j, m) ==
+NetAggHandleAppendEntriesResponses(i, j, m) ==
     /\ m.mterm = currentTerm[i]
     /\ \/ /\ m.msuccess \* successful
           /\ LET newMatchIndex == IF matchIndex[i][j] > m.mmatchIndex THEN matchIndex[i][j] ELSE m.mmatchIndex
@@ -544,10 +544,10 @@ Receive(m) ==
           /\ \/ DropStaleResponse(i, j, m)
              \/ HandleRequestVoteResponse(i, j, m)
        \/ /\ m.mtype = AppendEntriesRequest
-          /\ HandleAppendEntriesRequest(i, j, m)
+          /\ NetAggHandleAppendEntriesRequests(i, j, m)
        \/ /\ m.mtype = AppendEntriesResponse
           /\ \/ DropStaleResponse(i, j, m)
-             \/ HandleAppendEntriesResponse(i, j, m)
+             \/ NetAggHandleAppendEntriesResponses(i, j, m)
 
 \* End of message handlers.
 ----
@@ -581,8 +581,8 @@ Next == /\ \/ \E i \in Server : Timeout(i)
            \* History variable that tracks every log ever:
         /\ allLogs' = allLogs \cup {log[i] : i \in Server}
 
-\* MyInit remains unchanged for the core Raft state, entryCommitStats is handled in Init.
-MyInit ==
+\* MyNetAggInit remains unchanged for the core Raft state, entryCommitStats is handled in Init.
+MyNetAggInit ==
     LET ServerIds == CHOOSE ids \in [1..3 -> Server] : TRUE
         r1 == ServerIds[1]
         r2 == ServerIds[2]

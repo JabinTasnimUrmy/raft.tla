@@ -40,14 +40,31 @@ EntryCommitAckQuorumInv ==
 
 \* fake inv to obtain a trace
 LeaderCommitted ==
-    \E i \in Server : commitIndex[i] /= 1 \*
+    \E i \in Servers : commitIndex[i] /= 1 \*
+    
+\*FollowersAppendEntry == \E i,j \in Server : i /= j /\ state[i] = Follower /\ state[j] = Follower /\ Len(log[i]) = 1 /\ Len(log[j]) = 1 \* Verifies that at least one follower appends an entry
 
-\* FollowerAppendEntry
+FollowersAppendEntry == \A i \in Servers: (state[i] = Follower /\ Len(log[i]) > 0) \/ state[i] /= Follower
+
+ServersAppendEntry == \E i \in Servers: Len(log[i]) = 0 /\ state[i] /= Switch
+
+MessageSent == \A i,j \in DOMAIN messages: 
+    \/ Cardinality(DOMAIN messages) < 7 
+\*    \/  /\ Cardinality(DOMAIN messages) >= 2
+\*        /\ j /= i 
+\*        /\  \/ (i.mtype = AppendEntriesResponse /\ messages[i] /= 0) 
+\*            \/ (j.mtype = AppendEntriesResponse /\ messages[j] /= 0) 
+\*\*            \/ (i.mtype = AppendEntriesRequest /\ j.mtype = AppendEntriesRequest)
+
+
+AllMessagesNotConsumed == messages = <<>> \/ Cardinality(DOMAIN messages) < 8 \/ \E m \in DOMAIN messages: messages[m] /= 0
+
+
 
 \*Modify LeaderCommited == \E i \in Server : commitIndex[i] /= 1
-\*and run with MySpec OR
+\*and run with MyNetAggSpec OR
 
-\*Use the following modified Init with MyNext for finding an error trace with LeaderCommited == \E i \in Server : commitIndex[i] /= 2 violated
+\*Use the following modified Init with MyNetAggNext for finding an error trace with LeaderCommited == \E i \in Server : commitIndex[i] /= 2 violated
 (*
 
 /\  commitIndex = [r1 |-> 1, r2 |-> 1, r3 |-> 1]

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.lamport.tla.toolbox.tool.tlc.modelCheck">
+    <stringAttribute key="configurationName" value="Model_1_SnapShot_1748184635168"/>
+    <intAttribute key="distributedFPSetCount" value="0"/>
+    <stringAttribute key="distributedNetworkInterface" value="192.168.80.221"/>
+    <intAttribute key="distributedNodesCount" value="1"/>
+    <stringAttribute key="distributedTLC" value="off"/>
+    <intAttribute key="fpIndex" value="26"/>
+    <intAttribute key="maxHeapSize" value="25"/>
+    <stringAttribute key="modelBehaviorInit" value=""/>
+    <stringAttribute key="modelBehaviorNext" value=""/>
+    <stringAttribute key="modelBehaviorSpec" value="MySwitchSpec"/>
+    <intAttribute key="modelBehaviorSpecType" value="1"/>
+    <stringAttribute key="modelBehaviorVars" value="messages, matchIndex, log, switchToServerSentRecord, state, Servers, leaderCount, entryCommitStats, commitIndex, currentTerm, votesResponded, switchIndex, maxc, nextIndex, votesGranted, switchBuffer, voterLog, votedFor, unorderedClientRequestss"/>
+    <stringAttribute key="modelComments" value=""/>
+    <booleanAttribute key="modelCorrectnessCheckDeadlock" value="true"/>
+    <listAttribute key="modelCorrectnessInvariants">
+        <listEntry value="1LeaderCommitted"/>
+    </listAttribute>
+    <listAttribute key="modelCorrectnessProperties"/>
+    <intAttribute key="modelEditorOpenTabs" value="8"/>
+    <stringAttribute key="modelExpressionEval" value=""/>
+    <listAttribute key="modelParameterConstants">
+        <listEntry value="AppendEntriesResponse;;AppendEntriesResponse;1;0"/>
+        <listEntry value="Follower;;Follower;1;0"/>
+        <listEntry value="Leader;;Leader;1;0"/>
+        <listEntry value="MaxTerm;;2;0;0"/>
+        <listEntry value="Nil;;Nil;1;0"/>
+        <listEntry value="RequestVoteResponse;;RequestVoteResponse;1;0"/>
+        <listEntry value="MaxBecomeLeader;;1;0;0"/>
+        <listEntry value="Candidate;;Candidate;1;0"/>
+        <listEntry value="Switch;;Switch;1;0"/>
+        <listEntry value="RequestVoteRequest;;RequestVoteRequest;1;0"/>
+        <listEntry value="AppendEntriesRequest;;AppendEntriesRequest;1;0"/>
+        <listEntry value="Value;;{v1, v2};1;0"/>
+        <listEntry value="Server;;{r1, r2, r3, r4};1;0"/>
+        <listEntry value="MaxClientRequests;;3;0;0"/>
+    </listAttribute>
+    <intAttribute key="modelVersion" value="20191005"/>
+    <intAttribute key="numberOfWorkers" value="8"/>
+    <stringAttribute key="result.mail.address" value=""/>
+    <stringAttribute key="specName" value="raftModelPerf_1_0245503730"/>
+    <stringAttribute key="tlcResourcesProfile" value="local custom"/>
+</launchConfiguration>

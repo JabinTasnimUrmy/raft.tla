@@ -324,7 +324,7 @@ HandleRequestVoteResponse(i, j, m) ==
 \* m.mterm <= currentTerm[i]. This just handles m.entries of length 0 or 1, but
 \* implementations could safely accept more by treating them the same as
 \* multiple independent requests of 1 entry.
-HandleAppendEntriesRequest(i, j, m) ==
+NetAggHandleAppendEntriesRequests(i, j, m) ==
     LET logOk == \/ m.mprevLogIndex = 0
                  \/ /\ m.mprevLogIndex > 0
                     /\ m.mprevLogIndex <= Len(log[i])
@@ -390,7 +390,7 @@ HandleAppendEntriesRequest(i, j, m) ==
 
 \* Server i receives an AppendEntries response from server j with
 \* m.mterm = currentTerm[i].
-HandleAppendEntriesResponse(i, j, m) ==
+NetAggHandleAppendEntriesResponses(i, j, m) ==
     /\ m.mterm = currentTerm[i]
     /\ \/ /\ m.msuccess \* successful
           /\ nextIndex'  = [nextIndex  EXCEPT ![i][j] = m.mmatchIndex + 1]
@@ -430,10 +430,10 @@ Receive(m) ==
           /\ \/ DropStaleResponse(i, j, m)
              \/ HandleRequestVoteResponse(i, j, m)
        \/ /\ m.mtype = AppendEntriesRequest
-          /\ HandleAppendEntriesRequest(i, j, m)
+          /\ NetAggHandleAppendEntriesRequests(i, j, m)
        \/ /\ m.mtype = AppendEntriesResponse
           /\ \/ DropStaleResponse(i, j, m)
-             \/ HandleAppendEntriesResponse(i, j, m)
+             \/ NetAggHandleAppendEntriesResponses(i, j, m)
 
 \* End of message handlers.
 ----
